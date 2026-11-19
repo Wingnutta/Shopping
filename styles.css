@@ -1,0 +1,95 @@
+:root {
+  --green: #2e7d32;
+  --green-dark: #1b5e20;
+  --bg: #f4f7f4;
+  --card: #ffffff;
+  --text: #1c2b1e;
+  --muted: #6b7a6d;
+  --danger: #c62828;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 17px;
+}
+
+.app-header {
+  background: var(--green);
+  color: #fff;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 20px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+}
+.app-header h1 { margin: 0; font-size: 1.4rem; }
+
+main { padding: 16px; max-width: 600px; margin: 0 auto; }
+h2 { font-size: 1.05rem; color: var(--muted); margin: 8px 0 12px; font-weight: 600; }
+
+#add-form { display: flex; gap: 8px; }
+#add-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px;
+  font-size: 1rem;
+  border: 2px solid #cfd8cf;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+}
+#add-form input:focus { outline: none; border-color: var(--green); }
+#add-form button {
+  padding: 0 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--green);
+  color: #fff;
+}
+#add-form button:active { background: var(--green-dark); }
+
+.error { color: var(--danger); margin: 8px 4px 0; font-size: .9rem; }
+.empty { color: var(--muted); text-align: center; margin-top: 32px; }
+
+.card-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+.card-list li {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+  overflow: hidden;
+}
+.store-open {
+  flex: 1;
+  text-align: left;
+  padding: 18px 16px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  color: var(--text);
+}
+.store-open:active { background: #eef3ee; }
+.store-delete {
+  padding: 18px 16px;
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+}
+.store-delete:active { color: var(--danger); }
+
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #121812; --card: #1d261e; --text: #e6efe6; --muted: #93a595; }
+  #add-form input { background: #1d261e; border-color: #3a4a3c; }
+  .store-open:active { background: #263227; }
+}
