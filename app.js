@@ -1,10 +1,17 @@
-// UI layer
+// UI layer: supermarkets screen + simple navigation between screens.
+// Opening a supermarket sets the URL hash (#store/<id>), so the Android
+// back button / swipe returns to the supermarkets screen.
 (function () {
   const form = document.getElementById("add-form");
   const input = document.getElementById("store-name");
   const errorEl = document.getElementById("form-error");
   const listEl = document.getElementById("store-list");
   const emptyEl = document.getElementById("empty-state");
+
+  const homeView = document.getElementById("home-view");
+  const listView = document.getElementById("list-view");
+  const backBtn = document.getElementById("back-btn");
+  const titleEl = document.getElementById("app-title");
 
   function showError(msg) {
     errorEl.textContent = msg || "";
@@ -42,10 +49,46 @@
     });
   }
 
-  // Placeholder: later this will open the shopping list for that supermarket.
   function openStore(store) {
-    alert(store.name + " – lists coming soon!");
+    location.hash = "#store/" + store.id;
   }
+
+  // ---------- Navigation ----------
+
+  function showHome() {
+    listView.hidden = true;
+    homeView.hidden = false;
+    backBtn.hidden = true;
+    titleEl.textContent = "Shopping";
+    render(); // counts/names may have changed
+  }
+
+  function showList(id) {
+    if (!Lists.open(id)) {
+      showHome();
+      return;
+    }
+    homeView.hidden = true;
+    listView.hidden = false;
+    backBtn.hidden = false;
+    titleEl.textContent = "Shopping";
+    window.scrollTo(0, 0);
+  }
+
+  function route() {
+    const match = location.hash.match(/^#store\/(.+)$/);
+    if (match) showList(match[1]);
+    else showHome();
+  }
+
+  backBtn.addEventListener("click", () => {
+    if (history.length > 1) history.back();
+    else location.replace("#");
+  });
+
+  window.addEventListener("hashchange", route);
+
+  // ---------- Add supermarket form ----------
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -61,7 +104,7 @@
 
   input.addEventListener("input", () => showError(""));
 
-  render();
+  route();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
