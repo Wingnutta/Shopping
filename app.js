@@ -1,8 +1,11 @@
 // UI layer: supermarkets screen + simple navigation between screens.
 // Opening a supermarket sets the URL hash (#store/<id>) and its trip list is
 // #trip/<id>, so the Android back button / swipe steps back one screen.
+// On the supermarket and trip screens the header banner takes that chain's colours
+// (see supermarkets.js); the home screen keeps the plain green banner.
 (function () {
   const form = document.getElementById("add-form");
+  const chainSelect = document.getElementById("store-chain");
   const input = document.getElementById("store-name");
   const errorEl = document.getElementById("form-error");
   const listEl = document.getElementById("store-list");
@@ -13,16 +16,64 @@
   const tripView = document.getElementById("trip-view");
   const backBtn = document.getElementById("back-btn");
   const titleEl = document.getElementById("app-title");
+  const headerEl = document.querySelector(".app-header");
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
 
   function showError(msg) {
     errorEl.textContent = msg || "";
     errorEl.hidden = !msg;
   }
 
+  // ---------- Banner colours ----------
+
+  // store = the supermarket being shown, or null for the home screen (plain green).
+  function applyBanner(store) {
+    const root = document.documentElement;
+    const theme = store ? Chains.themeFor(store) : Chains.DEFAULT;
+    if (store) {
+      root.style.setProperty("--banner-bg", theme.bg);
+      root.style.setProperty("--banner-fg", theme.fg);
+    } else {
+      root.style.removeProperty("--banner-bg");
+      root.style.removeProperty("--banner-fg");
+    }
+    headerEl.classList.toggle("is-branded", !!store);
+    if (themeMeta) themeMeta.setAttribute("content", theme.bg); // phone status bar
+  }
+
+  // ---------- Supermarkets screen ----------
+
+  // Dropdown: every chain not added yet, then "Other…". Keeps the current choice.
+  function fillChainOptions(stores) {
+    const takenNames = new Set(stores.map((s) => s.name.toLowerCase()));
+    const takenKeys = new Set(stores.map((s) => s.chain).filter(Boolean));
+    const keep = chainSelect.value;
+
+    chainSelect.replaceChildren(new Option("Choose a supermarket…", ""));
+    Chains.all().forEach((c) => {
+      if (takenNames.has(c.name.toLowerCase()) || takenKeys.has(c.key)) return;
+      chainSelect.appendChild(new Option(c.name, c.key));
+    });
+    chainSelect.appendChild(new Option("Other…", "other"));
+
+    chainSelect.value = keep;
+    if (chainSelect.selectedIndex < 0) chainSelect.value = "";
+    syncNameBox();
+  }
+
+  // The name box only shows for "Other…".
+  function syncNameBox() {
+    const other = chainSelect.value === "other";
+    input.hidden = !other;
+    input.required = other;
+    if (!other) input.value = "";
+  }
+
   function render() {
     const stores = Store.getSupermarkets();
     listEl.replaceChildren();
     emptyEl.hidden = stores.length > 0;
+    fillChainOptions(stores);
 
     stores.forEach((s) => {
       const li = document.createElement("li");
@@ -58,17 +109,19 @@
 
   let backTarget = "#"; // where Back goes if there is no browser history to return to
 
-  function showScreen(which) {
+  // store = the supermarket on screen (list / trip screens), null on the home screen.
+  function showScreen(which, store) {
     homeView.hidden = which !== "home";
     listView.hidden = which !== "list";
     tripView.hidden = which !== "trip";
     backBtn.hidden = which === "home";
-    titleEl.textContent = "Shopping";
+    titleEl.textContent = store ? store.name : "Shopping";
+    applyBanner(store || null);
   }
 
   function showHome() {
     backTarget = "#";
-    showScreen("home");
+    showScreen("home", null);
     render(); // counts/names may have changed
   }
 
@@ -78,7 +131,7 @@
       return;
     }
     backTarget = "#";
-    showScreen("list");
+    showScreen("list", Store.getSupermarket(id));
     window.scrollTo(0, 0);
   }
 
@@ -88,7 +141,7 @@
       return;
     }
     backTarget = "#store/" + id;
-    showScreen("trip");
+    showScreen("trip", Store.getSupermarket(id));
     window.scrollTo(0, 0);
   }
 
@@ -109,15 +162,37 @@
 
   // ---------- Add supermarket form ----------
 
+  chainSelect.addEventListener("change", () => {
+    showError("");
+    syncNameBox();
+    if (chainSelect.value === "other") input.focus();
+  });
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const result = Store.addSupermarket(input.value);
+    const choice = chainSelect.value;
+    let result;
+
+    if (choice === "other") {
+      // A shop typed by hand. If the name is a known chain, it still gets that chain's colours.
+      const match = Chains.byName(input.value);
+      result = Store.addSupermarket(input.value, match ? match.key : null);
+    } else {
+      const chain = Chains.byKey(choice);
+      if (!chain) {
+        showError("Please choose a supermarket.");
+        return;
+      }
+      result = Store.addSupermarket(chain.name, chain.key);
+    }
+
     if (!result.ok) {
       showError(result.error);
       return;
     }
     showError("");
-    input.value = "";
+    chainSelect.value = "";
+    syncNameBox();
     render();
   });
 
