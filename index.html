@@ -24,8 +24,13 @@
       <h2 id="stores-title">Supermarkets</h2>
 
       <form id="add-form" autocomplete="off">
-        <input id="store-name" type="text" placeholder="Add a supermarket (e.g. Mercadona)"
-               maxlength="40" required aria-label="Supermarket name">
+        <!-- Options come from supermarkets.js (filled in by app.js); "Other…" shows the name box. -->
+        <select id="store-chain" aria-label="Choose a supermarket">
+          <option value="">Choose a supermarket…</option>
+          <option value="other">Other…</option>
+        </select>
+        <input id="store-name" type="text" placeholder="Shop name"
+               maxlength="40" aria-label="Supermarket name" hidden>
         <button type="submit">Add</button>
       </form>
       <p id="form-error" class="error" role="alert" hidden></p>
@@ -75,6 +80,7 @@
     </section>
   </main>
 
+  <script src="supermarkets.js"></script>
   <script src="store.js"></script>
   <script src="lists.js"></script>
   <script src="trip.js"></script>
