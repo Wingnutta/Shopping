@@ -19,9 +19,10 @@ html, body {
   font-size: 17px;
 }
 
+/* --banner-bg / --banner-fg are set by app.js on the supermarket and trip screens. */
 .app-header {
-  background: var(--green);
-  color: #fff;
+  background: var(--banner-bg, var(--green));
+  color: var(--banner-fg, #fff);
   padding: calc(env(safe-area-inset-top, 0px) + 16px) 20px 16px;
   position: sticky;
   top: 0;
@@ -29,13 +30,14 @@ html, body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
 }
 .app-header h1 { margin: 0; font-size: 1.4rem; }
+.app-header.is-branded h1 { font-weight: 800; letter-spacing: .02em; }
 
 main { padding: 16px; max-width: 600px; margin: 0 auto; }
 h2 { font-size: 1.05rem; color: var(--muted); margin: 8px 0 12px; font-weight: 600; }
 
-#add-form { display: flex; gap: 8px; }
-#add-form input {
-  flex: 1;
+/* Row 1: supermarket dropdown + Add. Row 2 (only for "Other…"): the shop name box. */
+#add-form { display: flex; flex-wrap: wrap; gap: 8px; }
+#add-form input, #add-form select {
   min-width: 0;
   padding: 14px;
   font-size: 1rem;
@@ -44,7 +46,11 @@ h2 { font-size: 1.05rem; color: var(--muted); margin: 8px 0 12px; font-weight: 6
   background: #fff;
   color: var(--text);
 }
-#add-form input:focus { outline: none; border-color: var(--green); }
+#add-form select { order: 1; flex: 1; }
+#add-form button { order: 2; }
+#add-form input { order: 3; flex: 1 1 100%; }
+#add-form input[hidden] { display: none; }
+#add-form input:focus, #add-form select:focus { outline: none; border-color: var(--green); }
 #add-form button {
   padding: 0 20px;
   font-size: 1rem;
@@ -90,6 +96,6 @@ h2 { font-size: 1.05rem; color: var(--muted); margin: 8px 0 12px; font-weight: 6
 
 @media (prefers-color-scheme: dark) {
   :root { --bg: #121812; --card: #1d261e; --text: #e6efe6; --muted: #93a595; }
-  #add-form input { background: #1d261e; border-color: #3a4a3c; }
+  #add-form input, #add-form select { background: #1d261e; border-color: #3a4a3c; }
   .store-open:active { background: #263227; }
 }
