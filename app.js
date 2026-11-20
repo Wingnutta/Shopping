@@ -17,6 +17,7 @@
   const backBtn = document.getElementById("back-btn");
   const titleEl = document.getElementById("app-title");
   const headerEl = document.querySelector(".app-header");
+  const badgeEl = document.getElementById("app-badge");
   const themeMeta = document.querySelector('meta[name="theme-color"]');
 
   function showError(msg) {
@@ -26,17 +27,29 @@
 
   // ---------- Banner colours ----------
 
+  // First letter of a name, for the round badge.
+  function initial(name) {
+    const first = Array.from(String(name).trim())[0];
+    return first ? first.toUpperCase() : "?";
+  }
+
   // store = the supermarket being shown, or null for the home screen (plain green).
+  // Sets --banner-bg / --banner-fg (header) and --accent (buttons, ticks) on the page.
   function applyBanner(store) {
     const root = document.documentElement;
     const theme = store ? Chains.themeFor(store) : Chains.DEFAULT;
     if (store) {
       root.style.setProperty("--banner-bg", theme.bg);
       root.style.setProperty("--banner-fg", theme.fg);
+      root.style.setProperty("--accent", theme.accent);
+      badgeEl.textContent = initial(store.name);
     } else {
       root.style.removeProperty("--banner-bg");
       root.style.removeProperty("--banner-fg");
+      root.style.removeProperty("--accent");
+      badgeEl.textContent = "";
     }
+    badgeEl.hidden = !store;
     headerEl.classList.toggle("is-branded", !!store);
     if (themeMeta) themeMeta.setAttribute("content", theme.bg); // phone status bar
   }
@@ -76,13 +89,33 @@
     fillChainOptions(stores);
 
     stores.forEach((s) => {
+      const theme = Chains.themeFor(s);
       const li = document.createElement("li");
+      li.style.setProperty("--card-bg", theme.bg);
+      li.style.setProperty("--card-fg", theme.fg);
 
       const open = document.createElement("button");
       open.type = "button";
       open.className = "store-open";
-      open.textContent = s.name; // textContent keeps user input safe
       open.addEventListener("click", () => openStore(s));
+
+      const badge = document.createElement("span");
+      badge.className = "store-badge";
+      badge.setAttribute("aria-hidden", "true");
+      badge.textContent = initial(s.name);
+
+      const text = document.createElement("span");
+      text.className = "store-text";
+      const nameEl = document.createElement("span");
+      nameEl.className = "store-name";
+      nameEl.textContent = s.name; // textContent keeps user input safe
+      const count = (s.items || []).length;
+      const countEl = document.createElement("span");
+      countEl.className = "store-count";
+      countEl.textContent = count ? count + (count === 1 ? " item" : " items") : "No items yet";
+      text.append(nameEl, countEl);
+
+      open.append(badge, text);
 
       const del = document.createElement("button");
       del.type = "button";
