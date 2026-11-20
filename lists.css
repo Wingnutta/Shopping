@@ -5,7 +5,7 @@
 .back-btn {
   background: none;
   border: none;
-  color: #fff;
+  color: var(--banner-fg, #fff);
   font-size: 1.5rem;
   line-height: 1;
   padding: 4px 8px 4px 0;
