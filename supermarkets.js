@@ -1,28 +1,33 @@
-// Catalogue of Spanish supermarket chains: name plus banner colours.
+// Catalogue of Spanish supermarket chains: name plus colours.
 // To add a chain, add one line to LIST. "key" must be unique and never change once
-// used (it is saved with each supermarket). bg = banner colour, fg = text colour on it.
+// used (it is saved with each supermarket).
+//   bg     = main colour (banner, home card)
+//   fg     = text colour on bg
+//   accent = optional; colour for buttons, ticks and outlines on the (white) page.
+//            Leave it out to use bg. Needed when bg is too light or too bright to read
+//            on white (e.g. Lidl's yellow, so Lidl uses its blue).
 // Colours are approximations of each brand; edit the hex codes to taste.
 const Chains = (() => {
   const LIST = [
     { key: "mercadona", name: "Mercadona",             bg: "#00843D", fg: "#ffffff" },
     { key: "carrefour", name: "Carrefour",             bg: "#004E9F", fg: "#ffffff" },
-    { key: "lidl",      name: "Lidl",                  bg: "#FFD500", fg: "#0050AA" },
+    { key: "lidl",      name: "Lidl",                  bg: "#FFD500", fg: "#0050AA", accent: "#0050AA" },
     { key: "dia",       name: "Dia",                   bg: "#E30613", fg: "#ffffff" },
     { key: "alcampo",   name: "Alcampo",               bg: "#E2001A", fg: "#ffffff" },
     { key: "aldi",      name: "Aldi",                  bg: "#00347B", fg: "#ffffff" },
     { key: "eroski",    name: "Eroski",                bg: "#D5001C", fg: "#ffffff" },
-    { key: "consum",    name: "Consum",                bg: "#EF7D00", fg: "#ffffff" },
+    { key: "consum",    name: "Consum",                bg: "#EF7D00", fg: "#ffffff", accent: "#B85400" },
     { key: "hipercor",  name: "Hipercor / El Corte Inglés", bg: "#00693E", fg: "#ffffff" },
-    { key: "ahorramas", name: "Ahorramas",             bg: "#2E9E3A", fg: "#ffffff" },
+    { key: "ahorramas", name: "Ahorramas",             bg: "#2E9E3A", fg: "#ffffff", accent: "#237A2D" },
     { key: "caprabo",   name: "Caprabo",               bg: "#D9262C", fg: "#ffffff" },
-    { key: "bonpreu",   name: "Bonpreu",               bg: "#00A04A", fg: "#ffffff" },
+    { key: "bonpreu",   name: "Bonpreu",               bg: "#00A04A", fg: "#ffffff", accent: "#007A38" },
     { key: "gadis",     name: "Gadis",                 bg: "#E2231A", fg: "#ffffff" },
     { key: "supercor",  name: "Supercor",              bg: "#1E7B4F", fg: "#ffffff" },
     { key: "froiz",     name: "Froiz",                 bg: "#E30613", fg: "#ffffff" }
   ];
 
-  // Used when a supermarket has no chain (the plain green banner).
-  const DEFAULT = { key: null, name: "", bg: "#2e7d32", fg: "#ffffff" };
+  // Used when a supermarket has no chain (the plain green look).
+  const DEFAULT = { key: null, name: "", bg: "#2e7d32", fg: "#ffffff", accent: "#2e7d32" };
 
   // All chains, in the order they should appear in the dropdown.
   function all() {
@@ -38,11 +43,12 @@ const Chains = (() => {
     return LIST.find((c) => c.name.toLowerCase() === n) || null;
   }
 
-  // Colours for a saved supermarket { name, chain }.
+  // Colours for a saved supermarket { name, chain }: { bg, fg, accent, ... }.
   // Order: its saved chain, then a name match (older supermarkets typed by hand), then green.
   function themeFor(store) {
-    if (!store) return DEFAULT;
-    return byKey(store.chain) || byName(store.name) || DEFAULT;
+    const chain = store ? byKey(store.chain) || byName(store.name) : null;
+    if (!chain) return DEFAULT;
+    return Object.assign({}, chain, { accent: chain.accent || chain.bg });
   }
 
   return { all, byKey, byName, themeFor, DEFAULT };
