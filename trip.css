@@ -9,17 +9,17 @@
   font-weight: 700;
   border: none;
   border-radius: var(--radius);
-  background: var(--green);
+  background: var(--accent, var(--green));
   color: #fff;
 }
-.newlist-btn:active { background: var(--green-dark); }
+.newlist-btn:active { filter: brightness(.85); }
 .newlist-btn:disabled { background: #cfd8cf; color: var(--muted); }
 
 .tool-btn[hidden] { display: none; }
-.is-choosing #choose-btn { background: var(--green); color: #fff; }
+.is-choosing #choose-btn { background: var(--accent, var(--green)); color: #fff; }
 
 /* Choose mode: ticked items are on the trip (normal colour, filled tick). */
-.item-row.is-chosen .item-box { background: var(--green); }
+.item-row.is-chosen .item-box { background: var(--accent, var(--green)); }
 
 @media (prefers-color-scheme: dark) {
   .newlist-btn:disabled { background: #2a352b; }
