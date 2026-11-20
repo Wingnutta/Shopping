@@ -21,7 +21,9 @@ html, body {
 
 /* --banner-bg / --banner-fg are set by app.js on the supermarket and trip screens. */
 .app-header {
-  background: var(--banner-bg, var(--green));
+  background-color: var(--banner-bg, var(--green));
+  /* soft light-to-dark sheen over the chain colour */
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, .18), rgba(0, 0, 0, .12));
   color: var(--banner-fg, #fff);
   padding: calc(env(safe-area-inset-top, 0px) + 16px) 20px 16px;
   position: sticky;
@@ -30,7 +32,30 @@ html, body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
 }
 .app-header h1 { margin: 0; font-size: 1.4rem; }
-.app-header.is-branded h1 { font-weight: 800; letter-spacing: .02em; }
+
+/* Supermarket and trip screens: taller banner, rounded bottom, round initial badge, big name. */
+.app-header.is-branded {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
+  padding-bottom: 24px;
+  border-radius: 0 0 26px 26px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+}
+.app-header.is-branded h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: .01em; }
+.app-badge {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--banner-fg, #fff);
+  color: var(--banner-bg, var(--green));
+  font-size: 1.4rem;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+}
+.app-badge[hidden] { display: none; }
 
 main { padding: 16px; max-width: 600px; margin: 0 auto; }
 h2 { font-size: 1.05rem; color: var(--muted); margin: 8px 0 12px; font-weight: 600; }
@@ -66,36 +91,59 @@ h2 { font-size: 1.05rem; color: var(--muted); margin: 8px 0 12px; font-weight: 6
 .empty { color: var(--muted); text-align: center; margin-top: 32px; }
 
 .card-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+/* Home screen: one card per supermarket in its chain colours (--card-bg / --card-fg set by app.js). */
 .card-list li {
   display: flex;
   align-items: center;
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+  background-color: var(--card-bg, var(--green));
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, .18), rgba(0, 0, 0, .12));
+  color: var(--card-fg, #fff);
+  border-radius: 20px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .2);
   overflow: hidden;
 }
 .store-open {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
   text-align: left;
-  padding: 18px 16px;
-  font-size: 1.05rem;
-  font-weight: 600;
+  padding: 14px 8px 14px 14px;
+  font: inherit;
   background: none;
   border: none;
-  color: var(--text);
+  color: inherit;
 }
-.store-open:active { background: #eef3ee; }
+.store-open:active { background: rgba(0, 0, 0, .15); }
+.store-badge {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-fg, #fff);
+  color: var(--card-bg, var(--green));
+  font-size: 1.4rem;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+}
+.store-text { display: flex; flex-direction: column; min-width: 0; }
+.store-name { font-size: 1.2rem; font-weight: 800; overflow-wrap: anywhere; }
+.store-count { font-size: .85rem; opacity: .85; margin-top: 2px; }
 .store-delete {
-  padding: 18px 16px;
+  padding: 22px 18px;
   font-size: 1.2rem;
   background: none;
   border: none;
-  color: var(--muted);
+  color: inherit;
+  opacity: .7;
 }
-.store-delete:active { color: var(--danger); }
+.store-delete:active { opacity: 1; }
 
 @media (prefers-color-scheme: dark) {
   :root { --bg: #121812; --card: #1d261e; --text: #e6efe6; --muted: #93a595; }
   #add-form input, #add-form select { background: #1d261e; border-color: #3a4a3c; }
-  .store-open:active { background: #263227; }
 }
