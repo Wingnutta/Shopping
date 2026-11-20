@@ -4,6 +4,7 @@
 // Shape (key "shopping-app:v1"):
 //   { supermarkets: [ {
 //       id, name, createdAt,
+//       chain: "mercadona" | null,                // key from supermarkets.js, null = plain green
 //       items: [ { id, name } ],                  // master list: everything she buys here
 //       trip:  [ { itemId, name, done } ]         // current trip: temporary list for one visit
 //   } ] }
@@ -51,8 +52,9 @@ const Store = (() => {
     return load().supermarkets.find((s) => s.id === id) || null;
   }
 
+  // chainKey (optional) is a key from supermarkets.js; leave it out for a custom shop.
   // Returns { ok: true } or { ok: false, error: "..." }
-  function addSupermarket(name) {
+  function addSupermarket(name, chainKey) {
     const clean = cleanName(name);
     if (!clean) return { ok: false, error: "Please enter a name." };
 
@@ -63,7 +65,8 @@ const Store = (() => {
     if (exists) return { ok: false, error: clean + " is already in the list." };
 
     data.supermarkets.push({
-      id: makeId(), name: clean, createdAt: Date.now(), items: [], trip: []
+      id: makeId(), name: clean, createdAt: Date.now(),
+      chain: chainKey ? String(chainKey) : null, items: [], trip: []
     });
     if (!save(data)) return { ok: false, error: "Could not save on this device." };
     return { ok: true };
