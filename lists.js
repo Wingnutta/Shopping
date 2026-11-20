@@ -1,10 +1,8 @@
-// UI for one supermarket's shopping list.
+// UI for one supermarket's master list (everything she buys in this shop).
+// No ticking here: the ticking happens on the trip list (trip.js).
 // Two modes:
-//   Shopping (default): tap an item to put it in the trolley. Ticked items turn
-//     grey, get a green tick and drop to the bottom of the list.
+//   Normal: just the list of items, plus the "New list" button that opens the trip list.
 //   Arrange: ▲ ▼ buttons reorder items, ✕ removes one.
-// Order is stored by Store; ticked items are only *displayed* at the bottom,
-// so unticking or Reset puts everything back where she arranged it.
 const Lists = (() => {
   const view = document.getElementById("list-view");
   const form = document.getElementById("item-form");
@@ -12,10 +10,9 @@ const Lists = (() => {
   const errorEl = document.getElementById("item-error");
   const listEl = document.getElementById("item-list");
   const emptyEl = document.getElementById("item-empty");
-  const doneMsgEl = document.getElementById("item-all-done");
-  const progressEl = document.getElementById("list-progress");
+  const countEl = document.getElementById("list-count");
   const arrangeBtn = document.getElementById("arrange-btn");
-  const resetBtn = document.getElementById("reset-btn");
+  const newListBtn = document.getElementById("newlist-btn");
 
   let storeId = null;
   let arranging = false;
@@ -35,31 +32,15 @@ const Lists = (() => {
     return b;
   }
 
-  function shoppingRow(item) {
+  function plainRow(item) {
     const li = document.createElement("li");
-    li.className = "item-row" + (item.done ? " is-done" : "");
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "item-toggle";
-    btn.setAttribute("aria-pressed", item.done ? "true" : "false");
-
-    const box = document.createElement("span");
-    box.className = "item-box";
-    box.textContent = item.done ? "✓" : "";
+    li.className = "item-row plain-row";
 
     const label = document.createElement("span");
     label.className = "item-label";
     label.textContent = item.name; // textContent keeps user input safe
 
-    btn.append(box, label);
-    btn.addEventListener("click", () => {
-      Store.toggleItem(storeId, item.id);
-      if (!item.done && navigator.vibrate) navigator.vibrate(15);
-      render();
-    });
-
-    li.appendChild(btn);
+    li.appendChild(label);
     return li;
   }
 
@@ -94,35 +75,27 @@ const Lists = (() => {
 
   function render() {
     const items = Store.getItems(storeId);
-    const doneCount = items.filter((i) => i.done).length;
+    const trip = Store.getTrip(storeId);
 
     listEl.replaceChildren();
     emptyEl.hidden = items.length > 0;
-    doneMsgEl.hidden = arranging || !(items.length > 0 && doneCount === items.length);
 
     view.classList.toggle("is-arranging", arranging);
     arrangeBtn.textContent = arranging ? "Done" : "Arrange";
     arrangeBtn.setAttribute("aria-pressed", arranging ? "true" : "false");
-    resetBtn.disabled = doneCount === 0;
-    progressEl.textContent = items.length
-      ? doneCount + " of " + items.length + " in trolley"
+    countEl.textContent = items.length
+      ? items.length + (items.length === 1 ? " item" : " items")
       : "";
 
-    if (arranging) {
-      // Everything in list order, with the reorder controls.
-      items.forEach((item, i) => listEl.appendChild(arrangeRow(item, i, items.length)));
-      return;
-    }
+    // A trip in progress can be continued; otherwise start a new one.
+    newListBtn.textContent = trip.length
+      ? "Continue list (" + trip.filter((t) => t.done).length + " of " + trip.length + " in trolley)"
+      : "New list";
+    newListBtn.disabled = items.length === 0 && trip.length === 0;
 
-    // Shopping: still-to-get first, then the ones already in the trolley.
-    items.filter((i) => !i.done).forEach((item) => listEl.appendChild(shoppingRow(item)));
-    if (doneCount > 0) {
-      const divider = document.createElement("li");
-      divider.className = "item-divider";
-      divider.textContent = "In the trolley";
-      listEl.appendChild(divider);
-      items.filter((i) => i.done).forEach((item) => listEl.appendChild(shoppingRow(item)));
-    }
+    items.forEach((item, i) => {
+      listEl.appendChild(arranging ? arrangeRow(item, i, items.length) : plainRow(item));
+    });
   }
 
   form.addEventListener("submit", (e) => {
@@ -145,11 +118,8 @@ const Lists = (() => {
     render();
   });
 
-  resetBtn.addEventListener("click", () => {
-    if (confirm("Reset this list for another visit? Everything will be un-ticked.")) {
-      Store.resetList(storeId);
-      render();
-    }
+  newListBtn.addEventListener("click", () => {
+    location.hash = "#trip/" + storeId;
   });
 
   // Called by app.js when she opens a supermarket.

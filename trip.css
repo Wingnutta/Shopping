@@ -1,0 +1,26 @@
+/* Styles for the trip-list screen and the "New list" button. Loaded after lists.css. */
+
+.newlist-btn {
+  display: block;
+  width: 100%;
+  margin: 14px 0 0;
+  padding: 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--green);
+  color: #fff;
+}
+.newlist-btn:active { background: var(--green-dark); }
+.newlist-btn:disabled { background: #cfd8cf; color: var(--muted); }
+
+.tool-btn[hidden] { display: none; }
+.is-choosing #choose-btn { background: var(--green); color: #fff; }
+
+/* Choose mode: ticked items are on the trip (normal colour, filled tick). */
+.item-row.is-chosen .item-box { background: var(--green); }
+
+@media (prefers-color-scheme: dark) {
+  .newlist-btn:disabled { background: #2a352b; }
+}

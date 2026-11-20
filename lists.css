@@ -107,6 +107,8 @@
   letter-spacing: .04em;
 }
 
+.plain-row { padding: 16px; font-size: 1.05rem; }
+
 .arrange-row { padding: 4px 4px 4px 16px; gap: 2px; }
 .arrange-row .item-label { padding: 12px 0; font-size: 1.05rem; }
 .move-btn, .item-delete {

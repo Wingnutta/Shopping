@@ -1,6 +1,6 @@
 // UI layer: supermarkets screen + simple navigation between screens.
-// Opening a supermarket sets the URL hash (#store/<id>), so the Android
-// back button / swipe returns to the supermarkets screen.
+// Opening a supermarket sets the URL hash (#store/<id>) and its trip list is
+// #trip/<id>, so the Android back button / swipe steps back one screen.
 (function () {
   const form = document.getElementById("add-form");
   const input = document.getElementById("store-name");
@@ -10,6 +10,7 @@
 
   const homeView = document.getElementById("home-view");
   const listView = document.getElementById("list-view");
+  const tripView = document.getElementById("trip-view");
   const backBtn = document.getElementById("back-btn");
   const titleEl = document.getElementById("app-title");
 
@@ -55,11 +56,19 @@
 
   // ---------- Navigation ----------
 
-  function showHome() {
-    listView.hidden = true;
-    homeView.hidden = false;
-    backBtn.hidden = true;
+  let backTarget = "#"; // where Back goes if there is no browser history to return to
+
+  function showScreen(which) {
+    homeView.hidden = which !== "home";
+    listView.hidden = which !== "list";
+    tripView.hidden = which !== "trip";
+    backBtn.hidden = which === "home";
     titleEl.textContent = "Shopping";
+  }
+
+  function showHome() {
+    backTarget = "#";
+    showScreen("home");
     render(); // counts/names may have changed
   }
 
@@ -68,22 +77,32 @@
       showHome();
       return;
     }
-    homeView.hidden = true;
-    listView.hidden = false;
-    backBtn.hidden = false;
-    titleEl.textContent = "Shopping";
+    backTarget = "#";
+    showScreen("list");
+    window.scrollTo(0, 0);
+  }
+
+  function showTrip(id) {
+    if (!Trip.open(id)) {
+      showHome();
+      return;
+    }
+    backTarget = "#store/" + id;
+    showScreen("trip");
     window.scrollTo(0, 0);
   }
 
   function route() {
-    const match = location.hash.match(/^#store\/(.+)$/);
-    if (match) showList(match[1]);
+    const store = location.hash.match(/^#store\/(.+)$/);
+    const trip = location.hash.match(/^#trip\/(.+)$/);
+    if (store) showList(store[1]);
+    else if (trip) showTrip(trip[1]);
     else showHome();
   }
 
   backBtn.addEventListener("click", () => {
     if (history.length > 1) history.back();
-    else location.replace("#");
+    else location.replace(backTarget);
   });
 
   window.addEventListener("hashchange", route);

@@ -10,10 +10,11 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="lists.css">
+  <link rel="stylesheet" href="trip.css">
 </head>
 <body>
   <header class="app-header">
-    <button id="back-btn" class="back-btn" type="button" aria-label="Back to supermarkets" hidden>←</button>
+    <button id="back-btn" class="back-btn" type="button" aria-label="Back" hidden>←</button>
     <h1 id="app-title">Shopping</h1>
   </header>
 
@@ -33,11 +34,13 @@
       <p id="empty-state" class="empty" hidden>No supermarkets yet. Add the first one above.</p>
     </section>
 
-    <!-- Screen 2: the shopping list of one supermarket -->
+    <!-- Screen 2: everything she buys at one supermarket (the master list) -->
     <section id="list-view" aria-labelledby="list-title" hidden>
       <h2 id="list-title">Shopping list</h2>
 
-      <form id="item-form" autocomplete="off">
+      <button id="newlist-btn" class="newlist-btn" type="button">New list</button>
+
+      <form id="item-form" autocomplete="off" style="margin-top:14px">
         <input id="item-name" type="text" placeholder="Add an item (e.g. Milk)"
                maxlength="60" required aria-label="Item name">
         <button type="submit">Add</button>
@@ -45,19 +48,36 @@
       <p id="item-error" class="error" role="alert" hidden></p>
 
       <div class="list-toolbar">
-        <span id="list-progress" class="list-progress"></span>
+        <span id="list-count" class="list-progress"></span>
         <button id="arrange-btn" class="tool-btn" type="button" aria-pressed="false">Arrange</button>
-        <button id="reset-btn" class="tool-btn" type="button">Reset</button>
       </div>
 
       <ul id="item-list" class="item-list"></ul>
       <p id="item-empty" class="empty" hidden>No items yet. Add the first one above.</p>
-      <p id="item-all-done" class="empty" hidden>Everything is in the trolley. 🎉</p>
+    </section>
+
+    <!-- Screen 3: the temporary list for one visit to that supermarket -->
+    <section id="trip-view" aria-labelledby="trip-title" hidden>
+      <h2 id="trip-title">List for this trip</h2>
+
+      <div class="list-toolbar">
+        <span id="trip-progress" class="list-progress"></span>
+        <button id="choose-btn" class="tool-btn" type="button" aria-pressed="false">Choose items</button>
+        <button id="trip-reset-btn" class="tool-btn" type="button">Reset</button>
+      </div>
+      <div class="list-toolbar">
+        <button id="add-all-btn" class="tool-btn" type="button" hidden>Add all</button>
+      </div>
+
+      <ul id="trip-list" class="item-list"></ul>
+      <p id="trip-empty" class="empty" hidden></p>
+      <p id="trip-all-done" class="empty" hidden>Everything is in the trolley. 🎉</p>
     </section>
   </main>
 
   <script src="store.js"></script>
   <script src="lists.js"></script>
+  <script src="trip.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
