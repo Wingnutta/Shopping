@@ -57,6 +57,11 @@ html, body {
 }
 .app-badge[hidden] { display: none; }
 
+/* Chains with a logo (see supermarkets.js): white circle, logo fills it.
+   The PNGs already carry their own margin, so no padding here. */
+.app-badge.has-logo, .store-badge.has-logo { background: #fff; overflow: hidden; }
+.app-badge img, .store-badge img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
 main { padding: 16px; max-width: 600px; margin: 0 auto; }
 h2 { font-size: 1.05rem; color: var(--muted); margin: 8px 0 12px; font-weight: 600; }
 
