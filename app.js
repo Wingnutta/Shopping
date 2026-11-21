@@ -213,6 +213,8 @@
   });
 
   window.addEventListener("hashchange", route);
+  // Fired by backup.js after a restore: redraw from the newly restored data.
+  window.addEventListener("shopping:data-changed", route);
 
   // ---------- Add supermarket form ----------
 
