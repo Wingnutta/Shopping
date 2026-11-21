@@ -192,9 +192,106 @@ const Store = (() => {
     withStore(storeId, (store) => { store.trip = []; });
   }
 
+  // ---------- Backup (export / restore) ----------
+  // A backup is one JSON file: { app, version, exportedAt, data: <everything above> }.
+  // Backup.js (the UI) downloads it and reads it back; all checking happens here.
+
+  const BACKUP_KEY = "shopping-app:last-backup"; // when she last saved a backup (not part of the backup)
+
+  function exportData() {
+    return JSON.stringify({
+      app: "shopping-app",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      data: load()
+    }, null, 2);
+  }
+
+  function text(v, max) {
+    return typeof v === "string" ? cleanName(v).slice(0, max) : "";
+  }
+
+  // Checks the text of a backup file and tidies it into the shape the app expects.
+  // Anything unusable is dropped rather than risk breaking the app.
+  // Returns { ok: true, data, exportedAt, stores, items } or { ok: false, error: "..." }.
+  function parseBackup(raw) {
+    let obj;
+    try { obj = JSON.parse(raw); } catch (e) { obj = null; }
+    const notBackup = { ok: false, error: "That file is not a Shopping backup." };
+    if (!obj || typeof obj !== "object") return notBackup;
+    if (obj.app !== undefined && obj.app !== "shopping-app") return notBackup;
+    if (typeof obj.version === "number" && obj.version > 1) {
+      return { ok: false, error: "That backup is from a newer version of the app." };
+    }
+    const src = obj.data && typeof obj.data === "object" ? obj.data : obj;
+    if (!Array.isArray(src.supermarkets)) return notBackup;
+
+    const seenStores = new Set();
+    const supermarkets = [];
+    let itemCount = 0;
+    src.supermarkets.forEach((s) => {
+      if (!s || typeof s !== "object") return;
+      const name = text(s.name, 40);
+      const id = typeof s.id === "string" && s.id ? s.id : makeId();
+      if (!name || seenStores.has(id)) return;
+      seenStores.add(id);
+
+      const seenItems = new Set();
+      const items = [];
+      (Array.isArray(s.items) ? s.items : []).forEach((i) => {
+        if (!i || typeof i !== "object") return;
+        const iname = text(i.name, 60);
+        const iid = typeof i.id === "string" && i.id ? i.id : makeId();
+        if (!iname || seenItems.has(iid)) return;
+        seenItems.add(iid);
+        items.push({ id: iid, name: iname });
+      });
+
+      const seenTrip = new Set();
+      const trip = [];
+      (Array.isArray(s.trip) ? s.trip : []).forEach((t) => {
+        if (!t || typeof t !== "object") return;
+        const tname = text(t.name, 60);
+        if (!tname || typeof t.itemId !== "string" || seenTrip.has(t.itemId)) return;
+        seenTrip.add(t.itemId);
+        trip.push({ itemId: t.itemId, name: tname, done: t.done === true });
+      });
+
+      itemCount += items.length;
+      supermarkets.push({
+        id, name,
+        createdAt: Number.isFinite(s.createdAt) ? s.createdAt : Date.now(),
+        chain: typeof s.chain === "string" && s.chain ? s.chain : null,
+        items, trip
+      });
+    });
+
+    return {
+      ok: true,
+      data: { supermarkets },
+      exportedAt: typeof obj.exportedAt === "string" ? obj.exportedAt : "",
+      stores: supermarkets.length,
+      items: itemCount
+    };
+  }
+
+  // Replaces everything on this phone with the (already checked) backup data.
+  function restoreData(data) {
+    return save({ supermarkets: data.supermarkets });
+  }
+
+  function getLastBackup() {
+    try { return Number(localStorage.getItem(BACKUP_KEY)) || 0; } catch (e) { return 0; }
+  }
+
+  function markBackup() {
+    try { localStorage.setItem(BACKUP_KEY, String(Date.now())); } catch (e) { /* not critical */ }
+  }
+
   return {
     getSupermarkets, getSupermarket, addSupermarket, removeSupermarket,
     getItems, addItem, moveItem, removeItem,
-    getTrip, setInTrip, addAllToTrip, toggleTripItem, resetTrip
+    getTrip, setInTrip, addAllToTrip, toggleTripItem, resetTrip,
+    exportData, parseBackup, restoreData, getLastBackup, markBackup
   };
 })();
