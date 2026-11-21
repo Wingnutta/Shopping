@@ -6,15 +6,18 @@
 //   accent = optional; colour for buttons, ticks and outlines on the (white) page.
 //            Leave it out to use bg. Needed when bg is too light or too bright to read
 //            on white (e.g. Lidl's yellow, so Lidl uses its blue).
+//   logo   = optional; path to a 192x192 transparent PNG in logos/, named after the key.
+//            Shown in the round badge. Chains without one show their first letter.
+//            Also add the file to FILES in sw.js so it works offline.
 // Colours are approximations of each brand; edit the hex codes to taste.
 const Chains = (() => {
   const LIST = [
-    { key: "mercadona", name: "Mercadona",             bg: "#00843D", fg: "#ffffff" },
-    { key: "carrefour", name: "Carrefour",             bg: "#004E9F", fg: "#ffffff" },
-    { key: "lidl",      name: "Lidl",                  bg: "#FFD500", fg: "#0050AA", accent: "#0050AA" },
-    { key: "dia",       name: "Dia",                   bg: "#E30613", fg: "#ffffff" },
+    { key: "mercadona", name: "Mercadona",             bg: "#00843D", fg: "#ffffff", logo: "logos/mercadona.png" },
+    { key: "carrefour", name: "Carrefour",             bg: "#004E9F", fg: "#ffffff", logo: "logos/carrefour.png" },
+    { key: "lidl",      name: "Lidl",                  bg: "#FFD500", fg: "#0050AA", accent: "#0050AA", logo: "logos/lidl.png" },
+    { key: "dia",       name: "Dia",                   bg: "#E30613", fg: "#ffffff", logo: "logos/dia.png" },
     { key: "alcampo",   name: "Alcampo",               bg: "#E2001A", fg: "#ffffff" },
-    { key: "aldi",      name: "Aldi",                  bg: "#00347B", fg: "#ffffff" },
+    { key: "aldi",      name: "Aldi",                  bg: "#00347B", fg: "#ffffff", logo: "logos/aldi.png" },
     { key: "eroski",    name: "Eroski",                bg: "#D5001C", fg: "#ffffff" },
     { key: "consum",    name: "Consum",                bg: "#EF7D00", fg: "#ffffff", accent: "#B85400" },
     { key: "hipercor",  name: "Hipercor / El Corte Inglés", bg: "#00693E", fg: "#ffffff" },
