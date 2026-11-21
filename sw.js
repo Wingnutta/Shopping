@@ -1,6 +1,6 @@
 // Caches the app shell so it opens instantly and works offline.
 // Bump CACHE when you change any file so phones pick up the update.
-const CACHE = "shopping-v5";
+const CACHE = "shopping-v6";
 const FILES = [
   "./",
   "index.html",
@@ -8,6 +8,11 @@ const FILES = [
   "lists.css",
   "trip.css",
   "supermarkets.js",
+  "logos/mercadona.png",
+  "logos/carrefour.png",
+  "logos/lidl.png",
+  "logos/dia.png",
+  "logos/aldi.png",
   "store.js",
   "lists.js",
   "trip.js",
