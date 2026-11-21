@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="lists.css">
   <link rel="stylesheet" href="trip.css">
+  <link rel="stylesheet" href="backup.css">
 </head>
 <body>
   <header class="app-header">
@@ -39,6 +40,19 @@
 
       <ul id="store-list" class="card-list"></ul>
       <p id="empty-state" class="empty" hidden>No supermarkets yet. Add the first one above.</p>
+
+      <!-- Backup: save everything to a file, or restore from one (backup.js). -->
+      <div class="backup">
+        <h2 id="backup-title">Backup</h2>
+        <p id="backup-status" class="backup-status"></p>
+        <div class="backup-buttons">
+          <button id="backup-save" class="tool-btn" type="button">Save backup</button>
+          <button id="backup-share" class="tool-btn" type="button" hidden>Share</button>
+          <button id="backup-restore" class="tool-btn" type="button">Restore</button>
+        </div>
+        <input id="backup-file" type="file" accept=".json,application/json" hidden>
+        <p id="backup-msg" class="backup-msg" role="status" hidden></p>
+      </div>
     </section>
 
     <!-- Screen 2: everything she buys at one supermarket (the master list) -->
@@ -86,6 +100,7 @@
   <script src="store.js"></script>
   <script src="lists.js"></script>
   <script src="trip.js"></script>
+  <script src="backup.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
