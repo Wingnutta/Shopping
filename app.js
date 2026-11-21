@@ -33,6 +33,26 @@
     return first ? first.toUpperCase() : "?";
   }
 
+  // Fill a round badge: the chain's logo if it has one, otherwise the first letter.
+  // If the logo file fails to load, the letter is shown instead.
+  function fillBadge(el, name, theme) {
+    el.replaceChildren();
+    el.classList.remove("has-logo");
+    if (theme.logo) {
+      const img = document.createElement("img");
+      img.alt = "";
+      img.src = theme.logo;
+      img.addEventListener("error", () => {
+        el.classList.remove("has-logo");
+        el.textContent = initial(name);
+      });
+      el.classList.add("has-logo");
+      el.appendChild(img);
+      return;
+    }
+    el.textContent = initial(name);
+  }
+
   // store = the supermarket being shown, or null for the home screen (plain green).
   // Sets --banner-bg / --banner-fg (header) and --accent (buttons, ticks) on the page.
   function applyBanner(store) {
@@ -42,12 +62,13 @@
       root.style.setProperty("--banner-bg", theme.bg);
       root.style.setProperty("--banner-fg", theme.fg);
       root.style.setProperty("--accent", theme.accent);
-      badgeEl.textContent = initial(store.name);
+      fillBadge(badgeEl, store.name, theme);
     } else {
       root.style.removeProperty("--banner-bg");
       root.style.removeProperty("--banner-fg");
       root.style.removeProperty("--accent");
-      badgeEl.textContent = "";
+      badgeEl.replaceChildren();
+      badgeEl.classList.remove("has-logo");
     }
     badgeEl.hidden = !store;
     headerEl.classList.toggle("is-branded", !!store);
@@ -102,7 +123,7 @@
       const badge = document.createElement("span");
       badge.className = "store-badge";
       badge.setAttribute("aria-hidden", "true");
-      badge.textContent = initial(s.name);
+      fillBadge(badge, s.name, theme);
 
       const text = document.createElement("span");
       text.className = "store-text";
