@@ -1,0 +1,18 @@
+/* Backup section at the bottom of the home screen. Loaded after trip.css. */
+
+.backup {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #d8e0d8;
+}
+.backup h2 { margin-top: 0; }
+.backup-status { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
+.backup-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.backup-msg { margin: 12px 2px 0; font-size: .9rem; color: var(--green); }
+.backup-msg.is-error { color: var(--danger); }
+.backup-msg[hidden] { display: none; }
+
+@media (prefers-color-scheme: dark) {
+  .backup { border-top-color: #2a352b; }
+  .backup-msg { color: #7fcf86; }
+}
