@@ -1,7 +1,7 @@
 // UI for one supermarket's master list (everything she buys in this shop).
 // No ticking here: the ticking happens on the trip list (trip.js).
 // Two modes:
-//   Normal: just the list of items, plus the "New list" button that opens the trip list.
+//   Normal: just the list of items, plus the "Next Shop" button that opens the trip list.
 //   Arrange: drag the ≡ handle to move an item anywhere (the list scrolls by itself when
 //            she drags near the top or bottom of the screen); ✕ removes one.
 //            With a keyboard, the up/down arrow keys on a focused handle also move it.
@@ -226,7 +226,7 @@ const Lists = (() => {
     // A trip in progress can be continued; otherwise start a new one.
     newListBtn.textContent = trip.length
       ? "Continue list (" + trip.filter((t) => t.done).length + " of " + trip.length + " in trolley)"
-      : "New list";
+      : "Next Shop";
     newListBtn.disabled = items.length === 0 && trip.length === 0;
 
     items.forEach((item) => {
