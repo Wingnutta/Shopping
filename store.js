@@ -128,6 +128,19 @@ const Store = (() => {
     });
   }
 
+  // Moves one item to a new position (0 = top). Used by drag and drop.
+  function moveItemTo(storeId, itemId, toIndex) {
+    withStore(storeId, (store) => {
+      const items = store.items;
+      const from = items.findIndex((i) => i.id === itemId);
+      if (from < 0) return;
+      const to = Math.max(0, Math.min(items.length - 1, toIndex));
+      if (to === from) return;
+      const moved = items.splice(from, 1)[0];
+      items.splice(to, 0, moved);
+    });
+  }
+
   // Removes an item from the master list only; a trip already in progress keeps it.
   function removeItem(storeId, itemId) {
     withStore(storeId, (store) => {
@@ -290,7 +303,7 @@ const Store = (() => {
 
   return {
     getSupermarkets, getSupermarket, addSupermarket, removeSupermarket,
-    getItems, addItem, moveItem, removeItem,
+    getItems, addItem, moveItem, moveItemTo, removeItem,
     getTrip, setInTrip, addAllToTrip, toggleTripItem, resetTrip,
     exportData, parseBackup, restoreData, getLastBackup, markBackup
   };
