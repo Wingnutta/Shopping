@@ -109,25 +109,59 @@
 
 .plain-row { padding: 16px; font-size: 1.05rem; }
 
-.arrange-row { padding: 4px 4px 4px 16px; gap: 2px; }
+.arrange-row { position: relative; padding: 4px 4px 4px 0; gap: 2px; }
 .arrange-row .item-label { padding: 12px 0; font-size: 1.05rem; }
-.move-btn, .item-delete {
+.item-delete {
   flex: none;
   width: 48px;
   height: 48px;
   font-size: 1.1rem;
   background: none;
   border: none;
-  color: var(--accent, var(--green));
+  color: var(--muted);
 }
-.move-btn:active { background: #eef3ee; border-radius: var(--radius); }
-.move-btn:disabled { color: #cfd8cf; }
-.item-delete { color: var(--muted); }
 .item-delete:active { color: var(--danger); }
+
+/* Drag handle (three bars). touch-action: none is only on the handle, so the page
+   still scrolls normally when she touches anywhere else. */
+.drag-handle {
+  flex: none;
+  width: 56px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--accent, var(--green));
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.grip-bars {
+  display: block;
+  width: 22px;
+  height: 14px;
+  background: repeating-linear-gradient(to bottom, currentColor 0 3px, transparent 3px 5.5px);
+  border-radius: 2px;
+}
+.drag-handle:active { background: #eef3ee; border-radius: var(--radius); }
+.drag-handle:focus-visible { outline: 2px solid var(--accent, var(--green)); border-radius: var(--radius); }
+
+/* While a row is being dragged */
+.is-sorting, .is-sorting .item-row { user-select: none; -webkit-user-select: none; }
+.is-sorting .item-row.is-shifting { transition: transform .15s ease; }
+.item-row.is-dragging {
+  z-index: 5;
+  transition: none;
+  cursor: grabbing;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .28);
+}
 
 @media (prefers-color-scheme: dark) {
   #item-form input { background: #1d261e; border-color: #3a4a3c; }
-  .item-toggle:active, .move-btn:active { background: #263227; }
+  .item-toggle:active, .drag-handle:active { background: #263227; }
   .tool-btn:disabled { border-color: #3a4a3c; }
-  .move-btn:disabled { color: #3a4a3c; }
 }
